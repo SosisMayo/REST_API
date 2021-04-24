@@ -25,14 +25,13 @@ router_mhs.get('/',async (req,res)=>{
 //READ BY NAME
 router_mhs.get('/:nama', async (req,res) => {
     const mahasiswa = await Mahasiswa.find({nama:req.params.nama});
-    console.log("Masuk Get by Nama");
-    // if (mahasiswa.nama==req.params.nama){
-    //     res.send(mahasiswa);
-    //     console.log(mahasiswa)
-    // }
-    // else{
-    //     res.status(404).send("Data Tidak Ditemukan");
-    // }
+    if (mahasiswa[0]){
+        res.send(mahasiswa);
+        console.log(mahasiswa)
+     }
+     else{
+        res.status(404).send("Data Tidak Ditemukan");
+    }
 });
 
 //CREATE
@@ -53,16 +52,23 @@ router_mhs.post('/',(req,res)=>{
 })
 
 //UPDATE
-router_mhs.put('/:nama',(req,res)=>{
-    const mahasiswa = Mahasiswa.findOneAndUpdate({nama:req.params.nama},{nama:req.body.nama,jurusan:req.body.jurusan},{new:true},(err,data)=>{
-        if(err){
-            console.log(error);
-        }
-        else{
-            res.send(data)
-            console.log(data);
-        }
-    })
+router_mhs.put('/:nama',async (req,res)=>{
+    let mahasiswa = await Mahasiswa.find({nama:req.params.nama});
+    console.log("Masuk Update");
+    if(mahasiswa[0]){
+        mahasiswa=Mahasiswa.findOneAndUpdate({nama:req.params.nama},{nama:req.body.nama,jurusan:req.body.jurusan},{new:true},(err,data)=>{
+            if(err){
+                console.log(error);
+            }
+            else{
+                res.send(data)
+                console.log(data);
+            }
+        })
+    }
+    else{
+        res.status(400).send("Data Mahasiswa Tidak Ada");
+    }
 })
 
 //DELETE
