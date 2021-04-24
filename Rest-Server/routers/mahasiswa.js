@@ -15,17 +15,27 @@ router_mhs.use((req,res,next)=>{
     next();
 });
 
-router_mhs.get('/',(req,res)=>{
+//READ ALL
+router_mhs.get('/',async (req,res)=>{
+    const mahasiswa = await Mahasiswa.find({});
     console.log("Get di /mahasiswa");
-    res.send("Anda Berada di localhost/mahasiswa");
+    res.status(200).send(mahasiswa);
 })
 
+//READ BY NAME
 router_mhs.get('/:nama', async (req,res) => {
-    const mhs = await Mahasiswa.find({nama:req.params.nama});
+    const mahasiswa = await Mahasiswa.find({nama:req.params.nama});
     console.log("Masuk Get by Nama");
-    res.send(mhs);
+    // if (mahasiswa.nama==req.params.nama){
+    //     res.send(mahasiswa);
+    //     console.log(mahasiswa)
+    // }
+    // else{
+    //     res.status(404).send("Data Tidak Ditemukan");
+    // }
 });
 
+//CREATE
 router_mhs.post('/',(req,res)=>{
     const mahasiswa = new Mahasiswa({
         _id: new mongoose.Types.ObjectId(),
@@ -39,6 +49,31 @@ router_mhs.post('/',(req,res)=>{
     res.status(200).json({
         message:"Data Mahasiswa telah ditambahkan",
         mahasiswaBaru:mahasiswa
+    })
+})
+
+//UPDATE
+router_mhs.put('/:nama',(req,res)=>{
+    const mahasiswa = Mahasiswa.findOneAndUpdate({nama:req.params.nama},{nama:req.body.nama,jurusan:req.body.jurusan},{new:true},(err,data)=>{
+        if(err){
+            console.log(error);
+        }
+        else{
+            res.send(data)
+            console.log(data);
+        }
+    })
+})
+
+//DELETE
+router_mhs.delete('/:nama',(req,res)=>{
+    const mahasiswa = Mahasiswa.findOneAndDelete({nama:req.params.nama},(err,data)=>{
+        if(err){
+            console.log(err);
+        }
+        else{
+            res.send("Data Telah Dihapus");
+        }
     })
 })
 
